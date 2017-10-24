@@ -1,0 +1,168 @@
+// VARIABLES
+$primary-color: black;
+
+html {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  font-family: Avenir !important;
+}
+
+*,
+*:before,
+*:after {
+  box-sizing: inherit;
+}
+
+#root {
+	background: linear-gradient(to bottom right, $primary-color, #2E185B);
+}
+
+#home {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	height: 100%;
+
+	#content-wrapper {
+		background: #dadada;
+		max-width: 700px;
+		height: 70%;
+		width: 70%;
+
+		#game-component {
+			display: flex;
+			height: 100%;
+			flex-direction: column;
+
+			.chat-window {
+				flex: 1;
+				display: flex;
+				flex-direction: column;
+
+				margin: 10px;
+				background: #fafafa;
+
+				.message-history {
+					flex: 1;
+					overflow: scroll;
+
+					.message {
+						margin: 10px;
+						font-size: 18px;
+					}
+
+					.from-opponent {
+						margin-right: 50px;
+						font-size: #dadada;
+					}
+
+					.from-user {
+						text-align: right;
+						margin-left: 50px;
+					}
+				}
+
+				.submission-window {
+					height: 40px;
+					display: flex;
+					flex-direction: row;
+					align-items: center;
+
+					.submission-input {
+						flex: 1;
+						height: 40px;
+						font-size: 18px;
+					}
+
+					.submission-button {
+						width: 50px;
+						padding: 10px;
+						display: flex;
+						align-items: center;
+						justify-content: center;
+						background: $primary-color;
+					}
+				}
+			}
+
+			.submission-options {
+				height: 120px;
+				display: flex;
+				flex-direction: row;
+				align-items: center;
+				justify-content: center;
+
+				.game-button {
+					font-size: 18px;
+					width: 140px;
+					height: 60px;
+					align-items: center;
+					justify-content: center;
+					display: flex;
+					background: $primary-color;
+					color: #dadada;
+					margin: 20px;
+					border-radius: 10px;
+
+					cursor: pointer;
+
+					&:hover {
+						background: #dadada;
+						border: 2px solid #241641;
+						color: $primary-color;
+					}
+				}
+			}
+		}
+
+		#landing {
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			flex-direction: column;
+
+			.landing-title {
+				font-size: 30px;
+				height: 100px;
+				justify-content: center;
+				align-items: center;
+				display: flex;
+			}
+
+			.level {
+				width: 50%;
+				max-width: 200px;
+				height: 100px;
+				background: #241641;
+				color: #fafafa;
+				margin: 20px;
+				display: flex;
+				justify-content: center;
+				align-items: center;
+				flex-direction: column;
+				border-radius: 10px;
+				cursor: pointer;
+
+				&:hover {
+					background: #fafafa;
+					color: #241641;
+					border: 2px solid #241641;
+				}
+
+				.level-name {
+					font-size: 20px;
+				}
+
+				.level-description {
+					font-size: 15px;
+				}
+			}
+		}
+	}
+}
