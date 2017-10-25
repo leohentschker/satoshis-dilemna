@@ -29,6 +29,10 @@ contract SatoshisDilemna is Ownable {
 		cooperationFraction = newFraction;
 	}
 
+	function buildSubmissionHash(string gameID, address user1, uint8 user1Action) constant returns (bytes32 hash) {
+		return sha256(gameID, user1, user1Action);
+	}
+
 	function submitResult(string gameID, bytes32 submissionHash) payable returns(bool success) {
 
 		// get the associated game
@@ -58,10 +62,6 @@ contract SatoshisDilemna is Ownable {
 
 		// error if the game is already done
 		return false;
-	}
-
-	function buildSubmissionHash(string gameID, address user1, uint8 user1Action) constant returns (bytes32 hash) {
-		return sha256(gameID, user1, user1Action);
 	}
 
 	function finishGame(string gameID, address user1, uint8 user1Action, address user2, uint8 user2Action)
