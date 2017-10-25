@@ -1,11 +1,12 @@
 pragma solidity ^0.4.4;
+import "zeppelin-solidity/contracts/ownership/Ownable.sol";
 
 // This is just a simple example of a coin-like contract.
 // It is not standards compatible and cannot be expected to talk to other
 // coin/token contracts. If you want to create a standards-compliant
 // token, see: https://github.com/ConsenSys/Tokens. Cheers!
 
-contract SatoshisDilemna {
+contract SatoshisDilemna is Ownable {
 
 	struct Game {
 		bytes32 user1SubmissionHash;
@@ -15,9 +16,20 @@ contract SatoshisDilemna {
 		bool finished;
 	}
 
+	uint8 constant COLLUDE = 1;
+	uint8 constant BETRAY = 2;
+
+	uint256 cooperationFraction = 2;
+
 	mapping (string => Game) games;
 
-	function setSubmissionHash(string gameID, bytes32 submissionHash) payable returns(bool success) {
+	function updateFraction(uint256 newFraction)
+		onlyOwner()
+	{
+		cooperationFraction = newFraction;
+	}
+
+	function submitResult(string gameID, bytes32 submissionHash) payable returns(bool success) {
 
 		// get the associated game
 		Game memory game = games[gameID];
@@ -48,31 +60,41 @@ contract SatoshisDilemna {
 		return false;
 	}
 
-	function finishGame(string gameID, address user1, string user1Action, address user2, string user2Action)
+	function buildSubmissionHash(string gameID, address user1, uint8 user1Action) constant returns (bytes32 hash) {
+		return sha256(gameID, user1, user1Action);
+	}
+
+	function finishGame(string gameID, address user1, uint8 user1Action, address user2, uint8 user2Action)
 	{
 		Game memory game = games[gameID];
+
 		require(!game.finished);
 
-		game.finished = true;
-
-		// use a zksnark to prove we know the correct result
+		// use a zero knowledge proof to show we know the correct result
 		require(
-			sha256(gameID, user1, user1Action) == game.user1SubmissionHash &&
-			sha256(gameID, user2, user2Action) == game.user1SubmissionHash
+			buildSubmissionHash(gameID, user1, user1Action) == game.user1SubmissionHash &&
+			buildSubmissionHash(gameID, user2, user2Action) == game.user1SubmissionHash
 		);
 
-		if (sha256(user1Action) == sha256("betray")) {
+		// mark the game as finished
+		game.finished = true;
 
-			if (sha256(user2Action) == sha256("collude")) {
-				user1.transfer(game.value);
+
+		// reward people based on the results
+		uint256 cooperationReward = game.value * cooperationFraction / 10;
+		if (user1Action == BETRAY) {
+
+			if (user2Action == COLLUDE) {
+				user1.transfer(game.value - cooperationReward);
 			}
 		} else {
 
-			if (sha256(user2Action) == sha256("collude")) {
-				user1.transfer(game.value / 2);
-				user2.transfer(game.value / 2);
+			if (user2Action == COLLUDE) {
+				uint256 playerValue = (game.value + cooperationReward) / 2;
+				user1.transfer(playerValue);
+				user2.transfer(playerValue);
 			} else {
-				user2.transfer(game.value);
+				user2.transfer(game.value - cooperationReward);
 			}
 		}
 	}
