@@ -81,6 +81,7 @@ function* testConnection(room, gameID, peerID) {
 function* findPotentialGames(ipfs, room) {
   // send invites and accept invites until we get
   // an acceptable partner
+  console.log('looking for potential')
   const { result } = yield race({
     acceptInvites: call(acceptInvitations, room),
     makePropositions: call(propositionRoom, room),
@@ -93,10 +94,10 @@ function* findPotentialGames(ipfs, room) {
   const gameRoom = Room(ipfs, gameID)
   yield race({
     attemptToJoin: call(testConnection, gameRoom, peerID),
-    delay: call(delay, PROPOSITION_DELAY, true),
+    delay: call(delay, PROPOSITION_DELAY * 2, true),
   })
 
-  yield call(findPotentialGames, room)
+  yield call(findPotentialGames, ipfs, room)
 }
 
 export default function* matchmakingFlow(ipfs, level) {
@@ -104,11 +105,11 @@ export default function* matchmakingFlow(ipfs, level) {
   const lobbyRoom = Room(ipfs, `satoshis-dilemna-${level}`)
 
   // find a peer and set up a game
-  const { selectedGame } = yield race({
-    selectedGame: take(GameTypes.JOIN_GAME),
+  const { joinGame } = yield race({
     findGames: call(findPotentialGames, ipfs, lobbyRoom),
+    joinGame: take(GameTypes.JOIN_GAME),
   })
-  const { gameRoom } = selectedGame
+  const { gameRoom } = joinGame
 
   return gameRoom
 }

@@ -26,7 +26,6 @@ export default class Home extends Component {
   }
 
   render() {
-    console.log(this.props.gameActions)
     return (
       <div id="home">
         <div id="content-wrapper">

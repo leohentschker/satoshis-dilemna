@@ -1,13 +1,12 @@
 import { fork } from 'redux-saga/effects'
 
 /* ------------- Sagas ------------- */
-import ChatSaga from './ChatSaga'
-import GameSaga from './GameSaga'
+import RootSaga from './RootSaga'
 
 /* ------------- Services ------------- */
 
 export default function* root() {
   yield [
-    fork(GameSaga),
+    fork(RootSaga),
   ]
 }

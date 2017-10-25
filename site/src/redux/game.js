@@ -9,6 +9,11 @@ const { Types, Creators } = createActions({
   joinGame: ['gameRoom'],
   findGame: ['level'],
   endGame: [],
+
+  broadcastAction: ['userID', 'action'],
+  submitAction: ['action'],
+
+  setID: ['userID'],
 })
 
 export const GameTypes = Types
@@ -18,13 +23,23 @@ export default Creators
 const INITIAL_STATE = Immutable({
   gameState: GAME_STATE.LANDING,
   gameRoom: null,
+
+  opponentActionHash: null,
+  userAction: null,
+
+  userID: null,
 })
 
 /* ------------- Reducer ------------- */
 export const reducer = createReducer(INITIAL_STATE, {
+  [Types.SET_ID]: (state, { userID }) =>
+    state.merge({ userID }),
+
   [Types.FIND_GAME]: state =>
     state.merge({ gameState: GAME_STATE.CONNECTING }),
 
   [Types.JOIN_GAME]: (state, { gameID }) =>
     state.merge({ gameState: GAME_STATE.CONNECTED, gameID }),
+
+  [Types.END_GAME]: () => INITIAL_STATE,
 })

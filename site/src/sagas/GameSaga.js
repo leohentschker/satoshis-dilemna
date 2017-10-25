@@ -1,42 +1,35 @@
 // external
+import cryptoRandomString from 'crypto-random-string'
 import {
   takeEvery,
   take,
   race,
   call,
-  put,
 } from 'redux-saga/effects'
-import Room from 'ipfs-pubsub-room'
-import IPFS from 'ipfs'
 
 // internal
 import GameActions, { GameTypes } from '../redux/game'
-import matchmakingFlow from './MatchmakingSaga'
-import chatFlow from './ChatSaga'
+
+const hash = (a, b) => a + b
 
 
-const launchIPFS = async () => {
-  const node = new IPFS({
-    EXPERIMENTAL: {
-      pubsub: true,
-    },
-  })
-  return new Promise(resolve => node.on('ready', () => resolve(node)))
+function* handleInput(ipfsID, gameRoom, secret) {
+  const { action } = yield take(GameTypes.SUBMIT_ACTION)
+  const actionHash = hash(secret, action)
+
+  // broadcast our action to our opponent
+  gameRoom.broadcast(JSON.stringify(
+    GameActions.broadcastAction(
+      ipfsID, actionHash),
+  ))
 }
 
-function* findGame(ipfs, { level }) {
-  const gameRoom = yield call(matchmakingFlow, ipfs, level)
-  console.log(gameRoom, 'THE ROOM WE JOINED')
-  yield race({
-    chat: call(chatFlow, ipfs, gameRoom),
-    // game: call(gameFlow, gameRoom),
-  })
-}
+export default function* gameFlow(ipfsID, gameRoom) {
+  // generate a secret used to sign transactions
+  // during the game
+  const secret = cryptoRandomString(10)
 
-export default function* flow() {
-  const ipfs = yield call(launchIPFS)
   yield [
-    takeEvery(GameTypes.FIND_GAME, findGame, ipfs),
-    // takeEvery(GameTypes.JOIN_GAME, joinGame, ipfs),
+    call(handleInput, ipfsID, gameRoom, secret),
   ]
 }
