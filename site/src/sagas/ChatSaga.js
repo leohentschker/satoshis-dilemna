@@ -18,10 +18,12 @@ const roomChannel = async (ipfs, room) => {
   return eventChannel((emit) => {
     // get the most recent messages from the channel
     room.on('message', (msg) => {
-      emit(ChatActions.readMessage(
-        msg.data.toString(),
-        msg.from === ipfsUser.id,
-      ))
+      if (msg.data.toString() !== room._topic) {
+        emit(ChatActions.readMessage(
+          msg.data.toString(),
+          msg.from === ipfsUser.id,
+        ))
+      }
     })
 
     // unsubscribe functions
