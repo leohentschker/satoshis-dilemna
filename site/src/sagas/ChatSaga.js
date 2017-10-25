@@ -43,14 +43,9 @@ function* write(room, { content }) {
   yield room.broadcast(content)
 }
 
-function* handleIO(ipfs, room) {
+export default function* chatFlow(ipfs, gameRoom) {
   yield [
-    fork(subscribeToRoom, ipfs, room),
-    takeEvery(ChatTypes.SEND_MESSAGE, write, room),
+    fork(subscribeToRoom, ipfs, gameRoom),
+    takeEvery(ChatTypes.SEND_MESSAGE, write, gameRoom),
   ]
-}
-
-export default function* chatFlow(ipfs, gameID) {
-  const room = Room(ipfs, gameID)
-  return yield fork(handleIO, ipfs, room)
 }

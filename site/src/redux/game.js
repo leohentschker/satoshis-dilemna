@@ -5,8 +5,10 @@ import { GAME_STATE } from '../components/constants'
 
 /* ------------- Types and Action Creators ------------- */
 const { Types, Creators } = createActions({
-  joinGame: ['gameID'],
+  testGame: ['gameID', 'peerID'],
+  joinGame: ['gameRoom'],
   findGame: ['level'],
+  endGame: [],
 })
 
 export const GameTypes = Types
@@ -15,7 +17,7 @@ export default Creators
 /* ------------- Initial State ------------- */
 const INITIAL_STATE = Immutable({
   gameState: GAME_STATE.LANDING,
-  gameID: null,
+  gameRoom: null,
 })
 
 /* ------------- Reducer ------------- */
