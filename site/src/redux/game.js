@@ -10,10 +10,14 @@ const { Types, Creators } = createActions({
   findGame: ['level'],
   endGame: [],
 
-  broadcastAction: ['userID', 'action'],
-  submitAction: ['action'],
+  setOpponentHash: ['opponentHash'],
+  setOpponentAction: ['opponentAction'],
+  reveal: ['userID', 'secret', 'action'],
 
-  setID: ['userID'],
+  broadcastAction: ['userID', 'actionHash'],
+  submitAction: ['userAction'],
+
+  setId: ['userID'],
 })
 
 export const GameTypes = Types
@@ -24,7 +28,9 @@ const INITIAL_STATE = Immutable({
   gameState: GAME_STATE.LANDING,
   gameRoom: null,
 
-  opponentActionHash: null,
+  opponentHash: null,
+  opponentAction: null,
+
   userAction: null,
 
   userID: null,
@@ -34,6 +40,15 @@ const INITIAL_STATE = Immutable({
 export const reducer = createReducer(INITIAL_STATE, {
   [Types.SET_ID]: (state, { userID }) =>
     state.merge({ userID }),
+
+  [Types.SET_OPPONENT_ACTION]: (state, { opponentAction }) =>
+    state.merge({ opponentAction }),
+
+  [Types.SUBMIT_ACTION]: (state, { userAction }) =>
+    state.merge({ userAction }),
+
+  [Types.SET_OPPONENT_HASH]: (state, { opponentHash }) =>
+    state.merge({ opponentHash }),
 
   [Types.FIND_GAME]: state =>
     state.merge({ gameState: GAME_STATE.CONNECTING }),

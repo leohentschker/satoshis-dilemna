@@ -28,7 +28,7 @@ function* findGame(ipfs, { level }) {
   const gameRoom = yield call(matchmakingFlow, ipfs, level)
   const ipfsUser = yield call(ipfs.id)
 
-  yield put(GameActions.setID(ipfsUser.id))
+  yield put(GameActions.setId(ipfsUser.id))
 
   yield race({
     subscribe: call(eavesdropFlow, gameRoom),
